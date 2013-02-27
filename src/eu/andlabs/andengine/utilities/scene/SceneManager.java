@@ -11,7 +11,6 @@ import org.andengine.entity.primitive.Rectangle;
 import org.andengine.util.color.Color;
 import org.andengine.util.modifier.IModifier;
 
-import android.os.AsyncTask;
 import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
 
 public abstract class SceneManager {
@@ -40,10 +39,10 @@ public abstract class SceneManager {
         loadingScene.onCreateEntities();
         this.mEngine.setScene(loadingScene);
 
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+        final Runnable runnable = new Runnable() {
 
             @Override
-            protected Void doInBackground(Void... pParams) {
+            public void run() {
                 // Dispose all the resources
                 if (SceneManager.this.mCurrentScene != null) {
                     SceneManager.this.mCurrentScene.onDisposeResources();
@@ -58,10 +57,7 @@ public abstract class SceneManager {
 
                 // Load new resources
                 SceneManager.this.mCurrentScene.onCreateResources(loadingScene);
-                return null;
-            }
 
-            protected void onPostExecute(Void result) {
                 SceneManager.this.mCurrentScene.onCreateEntities();
 
                 // Set the new scene with a nice alpha fade out/in
@@ -92,18 +88,17 @@ public abstract class SceneManager {
                             }
                         }));
                 loadingScene.attachChild(fadeRect);
-
             }
         };
-
-        task.execute();
+        
+        new Thread(runnable, "Change Scene Thread").start();
 
     }
-    
+
     protected ManagingGameActivity getContext() {
         return this.mContext;
     }
-    
+
     protected Engine getEngine() {
         return this.mEngine;
     }

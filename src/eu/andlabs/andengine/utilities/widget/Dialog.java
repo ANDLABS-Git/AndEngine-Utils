@@ -3,12 +3,13 @@ package eu.andlabs.andengine.utilities.widget;
 import java.io.IOException;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.AlphaModifier;
 import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.primitive.Rectangle;
-import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
@@ -25,87 +26,136 @@ import eu.andlabs.andengine.utilities.resource.ResourceManager;
  */
 public class Dialog {
 
-	private Sprite mWindow;
-	private Rectangle mBackground;
-	private TextureRegion mPopupTextureRegion;
-	private boolean mShowing;
+    private Sprite mWindow;
+    private Rectangle mBackground;
+    private TextureRegion mPopupTextureRegion;
+    private boolean mShowing;
+    private HUD mDialogHud;
+    // private HUD mOtherHud;
+    private Camera mCamera;
+    private boolean mHudExisted;
 
-	// private Scene mScene;
+    // private Scene mScene;
 
-	public Dialog() {
-	}
+    public Dialog(final Camera pCamera) {
+        this.mCamera = pCamera;
+    }
 
-	public void loadResources(final Context pContext,
-			final TextureManager pTextureManager) throws IOException {
-		this.mPopupTextureRegion = Utils.loadResource(pContext,
-				pTextureManager, ResourceManager.getInstance(pContext, pTextureManager).getGfxPath("popup.png"));
-	}
+    public void loadResources(final Context pContext,
+            final TextureManager pTextureManager) throws IOException {
+        this.mPopupTextureRegion = Utils.loadResource(pContext,
+                pTextureManager,
+                ResourceManager.getInstance(pContext, pTextureManager)
+                        .getGfxPath("popup.png"));
+    }
 
-	public void show(final Camera pCamera, final Scene pScene,
-			final VertexBufferObjectManager pVertexBufferObjectManager) {
+    public void show(final VertexBufferObjectManager pVertexBufferObjectManager) {
 
-		if (!mShowing) {
-			float x = -pScene.getX();
-			float y = -pScene.getY();
+        if (!mShowing) {
+            this.mShowing = true;
 
-			float xSprite = x
-					+ (pCamera.getWidth() - mPopupTextureRegion.getWidth()) / 2;
-			float ySprite = y
-					+ (pCamera.getHeight() - mPopupTextureRegion.getHeight())
-					/ 2;
+            float x = 0;
+            float y = 0;
 
-			float ratio = 720f / pCamera.getWidth();
+            final float width = 654;
+            final float height = 347;
 
-			if (mWindow == null) {
-				this.mWindow = new Sprite(xSprite, ySprite,
-						mPopupTextureRegion, pVertexBufferObjectManager);
-				this.mWindow.setScale(ratio * 1.2f);
-			}
+            float xSprite = x + mCamera.getWidth() / 2 - width / 2;
+            float ySprite = y + mCamera.getHeight() / 2 - height / 2;
 
-			if (mBackground == null) {
-				this.mBackground = new Rectangle(x, y, pCamera.getWidth(),
-						pCamera.getHeight(), pVertexBufferObjectManager);
-				this.mBackground.setColor(0, 0, 0, 0.8f);
-			}
+            if (mWindow == null) {
+                this.mWindow = new Sprite(xSprite, ySprite,
+                        mPopupTextureRegion, pVertexBufferObjectManager);
+                this.mWindow.setSize(width, height);
+            }
 
-			if (mBackground.getParent() == null) {
-				pScene.attachChild(mBackground);
-				pScene.registerTouchArea(mBackground);
-			}
+            if (mBackground == null) {
+                this.mBackground = new Rectangle(x, y, mCamera.getWidth(),
+                        mCamera.getHeight(), pVertexBufferObjectManager) {
+                    @Override
+                    public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+                            float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                        Dialog.this.dismiss();
+                        return true;
+                    }
+                };
+                this.mBackground.setColor(0, 0, 0, 0.8f);
+            }
 
-			if (mWindow.getParent() == null) {
-				pScene.attachChild(mWindow);
-			}
+            this.mDialogHud = mCamera.getHUD();
+            if (this.mDialogHud == null) {
+                this.mDialogHud = new HUD();
+            } else {
+                this.mHudExisted = true;
+            }
 
-			this.mBackground.registerEntityModifier(new AlphaModifier(0.15f, 0,
-					0.8f));
-			this.mWindow.registerEntityModifier(new ScaleModifier(0.15f,
-					0.00001f, 1f) {
-				@Override
-				protected void onModifierFinished(IEntity pItem) {
-					super.onModifierFinished(pItem);
-					
-					mWindow.registerEntityModifier(new ScaleModifier(0.08f,
-							1f, 0.75f));
-				}
-			});
+            if (mBackground.getParent() == null) {
+                this.mDialogHud.attachChild(mBackground);
+                this.mDialogHud.registerTouchArea(mBackground);
+            }
 
-			this.mShowing = true;
-		}
-	}
+            if (mWindow.getParent() == null) {
+                this.mDialogHud.attachChild(mWindow);
+            }
+            mCamera.setHUD(this.mDialogHud);
 
-	public void dismiss() {
-		// mScene.attachChild(mBackground);
-		this.mBackground.registerEntityModifier(new AlphaModifier(0.15f, 0.8f,
-				0));
-		// mScene.attachChild(mWindow);
-		this.mWindow.registerEntityModifier(new ScaleModifier(0.15f, 0.8f,
-				0.00001f));
+            this.mBackground.registerEntityModifier(new AlphaModifier(0.15f, 0,
+                    0.8f));
+            this.mWindow.registerEntityModifier(new ScaleModifier(0.15f,
+                    0.00001f, 1f) {
+                @Override
+                protected void onModifierFinished(IEntity pItem) {
+                    super.onModifierFinished(pItem);
 
-		this.mShowing = false;
-	}
+                    mWindow.registerEntityModifier(new ScaleModifier(0.08f, 1f,
+                            0.75f));
+                }
+            });
+        }
+    }
 
-	public boolean isShowing() {
-		return mShowing;
-	}
+    public void dismiss() {
+        if (this.mShowing) {
+            // mScene.attachChild(mBackground);
+            final AlphaModifier alphaOut = new AlphaModifier(0.15f, 0.8f, 0);
+            final ScaleModifier scaleOut = new ScaleModifier(0.15f, 0.8f,
+                    0.00001f) {
+                @Override
+                protected void onModifierFinished(IEntity pItem) {
+                    super.onModifierFinished(pItem);
+
+                    Dialog.this.mBackground.unregisterEntityModifier(alphaOut);
+                    Dialog.this.mBackground.unregisterEntityModifier(this);
+
+                    Dialog.this.mDialogHud.unregisterTouchArea(mBackground);
+                    Dialog.this.mWindow.detachSelf();
+                    Dialog.this.mBackground.detachSelf();
+
+                    if (!Dialog.this.mHudExisted) {
+                        Dialog.this.mDialogHud.detachSelf();
+                        Dialog.this.mCamera.setHUD(null);
+                    }
+                }
+            };
+
+            this.mBackground.registerEntityModifier(alphaOut);
+            this.mWindow.registerEntityModifier(scaleOut);
+
+            this.mShowing = false;
+
+        }
+    }
+
+    // private void swapEntities(HUD pOrigin, HUD pDestination) {
+    // for (int i = 0; i < pOrigin.getChildCount(); i++) {
+    // final IEntity entity = pOrigin.getChildByIndex(i);
+    // entity.detachSelf();
+    //
+    // pDestination.attachChild(entity);
+    // }
+    // }
+
+    public boolean isShowing() {
+        return mShowing;
+    }
 }

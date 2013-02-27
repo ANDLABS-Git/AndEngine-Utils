@@ -2,8 +2,11 @@ package eu.andlabs.andengine.utilities;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.andengine.opengl.texture.PixelFormat;
+import org.andengine.opengl.texture.Texture;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -19,50 +22,80 @@ import android.content.Context;
 
 public class Utils {
 
-	public static TextureRegion loadResource(final Context pContext,
-			final TextureManager pTextureManager, final PixelFormat pFormat,
-			final String pPath) throws IOException {
-		return loadResource(pContext, pTextureManager, pFormat,
-				TextureOptions.DEFAULT, pPath);
-	}
+    private static List<Texture> sTextures = new ArrayList<Texture>();
+    private static List<Texture> sLoadingTextures = new ArrayList<Texture>();
 
-	public static TextureRegion loadResource(final Context pContext,
-			final TextureManager pTextureManager,
-			final TextureOptions pOptions, final String pPath)
-			throws IOException {
-		return loadResource(pContext, pTextureManager, PixelFormat.RGBA_8888,
-				pOptions, pPath);
-	}
+    public static TextureRegion loadResource(final Context pContext,
+            final TextureManager pTextureManager, final PixelFormat pFormat,
+            final String pPath) throws IOException {
+        return loadResource(pContext, pTextureManager, pFormat,
+                TextureOptions.DEFAULT, pPath);
+    }
 
-	public static TextureRegion loadResource(final Context pContext,
-			final TextureManager pTextureManager, final String pPath)
-			throws IOException {
-		return loadResource(pContext, pTextureManager, TextureOptions.DEFAULT,
-				pPath);
-	}
+    public static TextureRegion loadResource(final Context pContext,
+            final TextureManager pTextureManager,
+            final TextureOptions pOptions, final String pPath)
+            throws IOException {
+        return loadResource(pContext, pTextureManager, PixelFormat.RGBA_8888,
+                pOptions, pPath);
+    }
 
-	public static TextureRegion loadResource(final Context pContext,
-			final TextureManager pTextureManager, final PixelFormat pFormat,
-			final TextureOptions pOptions, final String pPath)
-			throws IOException {
-		final BitmapTexture texture = new BitmapTexture(pTextureManager,
-				new IInputStreamOpener() {
-					@Override
-					public InputStream open() throws IOException {
-						return pContext.getAssets().open(pPath);
-					}
-				}, BitmapTextureFormat.fromPixelFormat(pFormat), pOptions);
+    public static TextureRegion loadResource(final Context pContext,
+            final TextureManager pTextureManager, final String pPath)
+            throws IOException {
+        return loadResource(pContext, pTextureManager, TextureOptions.DEFAULT,
+                pPath);
+    }
 
-		texture.load();
+    public static TextureRegion loadResource(final Context pContext,
+            final TextureManager pTextureManager, final PixelFormat pFormat,
+            final TextureOptions pOptions, final String pPath)
+            throws IOException {
+        final BitmapTexture texture = new BitmapTexture(pTextureManager,
+                new IInputStreamOpener() {
+                    @Override
+                    public InputStream open() throws IOException {
+                        return pContext.getAssets().open(pPath);
+                    }
+                }, BitmapTextureFormat.fromPixelFormat(pFormat), pOptions);
 
-		return TextureRegionFactory.extractFromTexture(texture);
-	}
+        texture.load();
 
-	public static TiledTextureRegion loadTiledResource(final Context pContext, final TextureManager pTextureManager, final int pWidth, final int pHeight, final PixelFormat pFormat, final TextureOptions pOptions, final String pPath) throws IOException {
-		final BuildableBitmapTextureAtlas texture = new BuildableBitmapTextureAtlas(pTextureManager, pWidth, pHeight, BitmapTextureFormat.fromPixelFormat(pFormat), pOptions);
+        addTexture(texture);
 
-		texture.load();
+        return TextureRegionFactory.extractFromTexture(texture);
+    }
 
-		return BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, pContext.getAssets(), pPath, 1, 2);
-	}
+    public static TiledTextureRegion loadTiledResource(final Context pContext,
+            final TextureManager pTextureManager, final int pWidth,
+            final int pHeight, final PixelFormat pFormat,
+            final TextureOptions pOptions, final String pPath)
+            throws IOException {
+        final BuildableBitmapTextureAtlas texture = new BuildableBitmapTextureAtlas(
+                pTextureManager, pWidth, pHeight,
+                BitmapTextureFormat.fromPixelFormat(pFormat), pOptions);
+
+        texture.load();
+
+        return BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+                texture, pContext.getAssets(), pPath, 1, 2);
+    }
+    
+    public static void addTexture(Texture pTexture) {
+        sTextures.add(pTexture);
+    }
+    
+    public static void saveTextures() {
+        for(int i = sTextures.size() - 1; i>= 0; i--) {
+            sLoadingTextures.add(sTextures.get(i));
+        }
+        
+        sTextures.clear();
+    }
+    
+    public static void disposeTextures() {
+        for(int i = sTextures.size() - 1; i>= 0; i--) {
+            sTextures.get(i).unload();
+        }
+    }
 }

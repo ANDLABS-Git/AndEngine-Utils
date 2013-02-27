@@ -6,16 +6,20 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import android.content.Context;
+import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
 
 public abstract class ManagedScene extends Scene implements BackKeyListener {
 
     protected Engine mEngine;
-    protected Context mContext;
+    protected ManagingGameActivity mContext;
 
-    protected ManagedScene(Context pContext, Engine pEngine) {
+    protected ManagedScene(ManagingGameActivity pContext, Engine pEngine) {
         this.mContext = pContext;
         this.mEngine = pEngine;
+    }
+
+    protected ManagingGameActivity getManager() {
+        return this.mContext;
     }
 
     protected VertexBufferObjectManager getVertexBufferObjectManager() {
@@ -36,5 +40,4 @@ public abstract class ManagedScene extends Scene implements BackKeyListener {
 
     public abstract void onDisposeResources();
 
-   
 }

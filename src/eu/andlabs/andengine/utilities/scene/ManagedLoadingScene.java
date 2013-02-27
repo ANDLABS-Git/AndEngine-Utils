@@ -2,12 +2,12 @@ package eu.andlabs.andengine.utilities.scene;
 
 import org.andengine.engine.Engine;
 
-import android.content.Context;
+import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
 
 public abstract class ManagedLoadingScene extends ManagedScene implements
         ProgressListener {
 
-    protected ManagedLoadingScene(Context pContext, Engine pEngine) {
+    protected ManagedLoadingScene(ManagingGameActivity pContext, Engine pEngine) {
         super(pContext, pEngine);
     }
 }

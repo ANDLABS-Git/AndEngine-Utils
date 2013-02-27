@@ -4,14 +4,14 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import eu.andlabs.andengine.utilities.scene.BackKeyListener;
 
-public abstract class ManagingGameActivity extends SimpleBaseGameActivity implements BackKeyListener{
+public abstract class ManagingGameActivity extends SimpleBaseGameActivity {
 
     private BackKeyListener mListener;
 
     @Override
     public void onBackPressed() {
         if (this.mListener == null || !this.mListener.onCustomBackPressed()) {
-            onBackPressed();
+            super.onBackPressed();
         }
     }
 
