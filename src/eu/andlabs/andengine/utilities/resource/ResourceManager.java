@@ -1,20 +1,19 @@
 package eu.andlabs.andengine.utilities.resource;
 
 import org.andengine.engine.Engine;
-import org.andengine.opengl.texture.TextureManager;
-import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
-import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
 
+import android.util.Log;
+import eu.andlabs.andengine.utilities.SystemUtils;
+import eu.andlabs.andengine.utilities.SystemUtils.SystemUtilsException;
 import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
-
-import android.content.Context;
-import android.util.DisplayMetrics;
 
 public class ResourceManager {
 
-    private static ResourceManager sInstance;
+    private static final int MEDIUM_RES_MEMORY = 256;
 
-    private DisplayMetrics mMetrics;
+    private static final int HI_RES_MEMORY = 384;
+
+    private static ResourceManager sInstance;
 
     private ManagingGameActivity mManager;
 
@@ -47,56 +46,41 @@ public class ResourceManager {
 
 
     public String getGfxPath(String pFile) {
-        if (this.mMetrics == null) {
-            this.mMetrics = this.mManager.getResources().getDisplayMetrics();
+
+        long systemMemory = 0; // kB
+        try {
+            systemMemory = SystemUtils.getSystemMemorySize(); // kB
+        } catch (SystemUtilsException e) {
+            e.printStackTrace();
         }
+        final long systemMemoryMb = systemMemory / 1024; // mB
 
         StringBuilder sb = new StringBuilder();
         sb.append("gfx/");
 
         String path;
-        switch (mMetrics.densityDpi) {
-            case DisplayMetrics.DENSITY_LOW:
-                sb.append("drawable-ldpi/");
-                sb.append(pFile);
-                path = sb.toString();
+        
+        Log.d("ResourceManager", "System Memory in MB is " + systemMemoryMb);
 
-                // Check if if the file exists. If not, check for the next higher
-                // density.
-                // if (new File("file:///android_asset/" + path).exists()) {
-                return path;
-                // }
-            case DisplayMetrics.DENSITY_MEDIUM:
-                sb.append("drawable-mdpi/");
-                sb.append(pFile);
-                path = sb.toString();
 
-                // Check if if the file exists. If not, check for the next higher
-                // density.
-                // if (new File("file:///android_asset/" + path).exists()) {
-                return path;
-                // }
-            case DisplayMetrics.DENSITY_HIGH:
-                sb.append("drawable-hdpi/");
-                sb.append(pFile);
-                path = sb.toString();
+        if (systemMemoryMb > HI_RES_MEMORY) { // Assume the device is capable of high-res assets
+            sb.append("drawable-xhdpi/");
+            sb.append(pFile);
+            path = sb.toString();
 
-                // Check if if the file exists. If not, check for the next higher
-                // density.
-                // if (new File("file:///android_asset/" + path).exists()) {
-                return path;
-                // }
-            default: // XHIGH and TV
-                sb.append("drawable-xhdpi/");
-                sb.append(pFile);
-                path = sb.toString();
+            return path;
+        } else if (systemMemoryMb > MEDIUM_RES_MEMORY) { // Assume the device is capable of medium sized assets
+            sb.append("drawable-hdpi/");
+            sb.append(pFile);
+            path = sb.toString();
 
-                // Check if if the file exists. If not, check for the next higher
-                // density.
-                // if (new File("file:///android_asset/" + path).exists()) {
-                return path;
-                // }
-                // return null;
+            return path;
+        } else { // Very low system memory, mdpi assets
+            sb.append("drawable-mdpi/");
+            sb.append(pFile);
+            path = sb.toString();
+
+            return path;
         }
     }
 }
