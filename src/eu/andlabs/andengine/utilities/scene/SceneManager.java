@@ -8,10 +8,12 @@ import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.entity.primitive.Rectangle;
+import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.color.Color;
 import org.andengine.util.modifier.IModifier;
 
 import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
+import eu.andlabs.andengine.utilities.activity.ManagingLayoutGameActivity;
 
 public abstract class SceneManager {
 
@@ -19,10 +21,13 @@ public abstract class SceneManager {
 
     private Engine mEngine;
 
-    private ManagingGameActivity mContext;
+     private ManagingGameActivity mContext;
+
+    private ManagingLayoutGameActivity mLayoutContext;
 
     public static final int SCENE_MENU = 1;
     public static final int SCENE_GAME = SCENE_MENU + 1;
+
 
     public SceneManager(ManagingGameActivity pContext, Engine pEngine) {
         if (pEngine == null) {
@@ -32,9 +37,19 @@ public abstract class SceneManager {
         this.mEngine = pEngine;
     }
 
+
+    public SceneManager(ManagingLayoutGameActivity pContext, Engine pEngine) {
+        if (pEngine == null) {
+            throw new NullPointerException("pEngine must not be null");
+        }
+        this.mLayoutContext = pContext;
+        this.mEngine = pEngine;
+    }
+
+
     public void changeScene(final ManagedScene pScene) {
         // Show the loading screen,
-        final ManagedLoadingScene loadingScene = getLoadingScene();
+        final ManagedLoadingScene loadingScene = pScene.getLoadingScene();
         loadingScene.onCreateResources(null);
         loadingScene.onCreateEntities();
         this.mEngine.setScene(loadingScene);
@@ -53,7 +68,13 @@ public abstract class SceneManager {
 
                 SceneManager.this.mCurrentScene = pScene;
 
-                SceneManager.this.mContext.setBackKeyListener(mCurrentScene);
+                if (SceneManager.this.mContext != null) {
+                    SceneManager.this.mContext.setBackKeyListener(mCurrentScene);
+                }
+                if (SceneManager.this.mLayoutContext != null) {
+                    SceneManager.this.mLayoutContext.setBackKeyListener(mCurrentScene);
+                }
+
 
                 // Load new resources
                 SceneManager.this.mCurrentScene.onCreateResources(loadingScene);
@@ -61,47 +82,45 @@ public abstract class SceneManager {
                 SceneManager.this.mCurrentScene.onCreateEntities();
 
                 // Set the new scene with a nice alpha fade out/in
-                final Rectangle fadeRect = new Rectangle(0, 0, 853, 480,
-                        mCurrentScene.getVertexBufferObjectManager());
+                final Rectangle fadeRect = new Rectangle(0, 0, 853, 480, mCurrentScene.getVertexBufferObjectManager());
                 fadeRect.setColor(Color.TRANSPARENT);
-                fadeRect.setBlendFunction(GL10.GL_SRC_ALPHA,
-                        GL10.GL_ONE_MINUS_SRC_ALPHA);
+                fadeRect.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
-                fadeRect.registerEntityModifier(new FadeInModifier(0.5f,
-                        new IEntityModifierListener() {
+                fadeRect.registerEntityModifier(new FadeInModifier(0.3f, new IEntityModifierListener() {
 
-                            @Override
-                            public void onModifierStarted(
-                                    IModifier<IEntity> pModifier, IEntity pItem) {
+                    @Override
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
 
-                            }
+                    }
 
-                            @Override
-                            public void onModifierFinished(
-                                    IModifier<IEntity> pModifier, IEntity pItem) {
-                                fadeRect.detachSelf();
-                                mCurrentScene.attachChild(fadeRect);
-                                SceneManager.this.mEngine
-                                        .setScene(mCurrentScene);
-                                fadeRect.registerEntityModifier(new FadeOutModifier(
-                                        0.5f));
-                            }
-                        }));
+
+                    @Override
+                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                        fadeRect.detachSelf();
+                        mCurrentScene.attachChild(fadeRect);
+                        SceneManager.this.mEngine.setScene(mCurrentScene);
+                        fadeRect.registerEntityModifier(new FadeOutModifier(0.3f));
+                    }
+                }));
                 loadingScene.attachChild(fadeRect);
             }
         };
-        
+
         new Thread(runnable, "Change Scene Thread").start();
 
     }
 
-    protected ManagingGameActivity getContext() {
-        return this.mContext;
+
+    protected BaseGameActivity getContext() {
+        if(mContext != null) {
+            return mContext;
+        } else {
+            return mLayoutContext;
+        }
     }
+
 
     protected Engine getEngine() {
         return this.mEngine;
     }
-
-    protected abstract ManagedLoadingScene getLoadingScene();
 }

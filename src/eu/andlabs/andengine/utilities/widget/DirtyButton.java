@@ -1,6 +1,7 @@
 package eu.andlabs.andengine.utilities.widget;
 
 import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
@@ -85,7 +86,7 @@ public class DirtyButton {
 		this.mParentEntity = pScene;
 	}
 	
-	public void attachToEntity(final Scene pScene, final IEntity pEntity) {
+	public void attachToEntity(final Scene pScene, final Sprite pEntity) {
         pEntity.attachChild(this.mInitial);
         pScene.registerTouchArea(this.mInitial);
         pEntity.attachChild(this.mPressed);
@@ -128,6 +129,16 @@ public class DirtyButton {
 	public void setFlipped(final boolean pHorizontal, final boolean pVertical) {
 		setFlippedHorizontal(pHorizontal);
 		setFlippedVertical(pVertical);
+	}
+	
+	public boolean detachSelf() {
+	    return this.mInitial.detachSelf() && this.mPressed.detachSelf();
+	}
+	
+	public void registerEntityModifier(IEntityModifier pModifier) {
+	    this.mInitial.registerEntityModifier(pModifier);
+	    this.mPressed.registerEntityModifier(pModifier);
+        
 	}
 
 	/**

@@ -2,11 +2,11 @@ package eu.andlabs.andengine.utilities.activity;
 
 
 import org.andengine.entity.scene.Scene;
-import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.ui.activity.LayoutGameActivity;
 
 import eu.andlabs.andengine.utilities.scene.BackKeyListener;
 
-public abstract class ManagingGameActivity extends BaseGameActivity {
+public abstract class ManagingLayoutGameActivity extends LayoutGameActivity {
 
     private BackKeyListener mListener;
     

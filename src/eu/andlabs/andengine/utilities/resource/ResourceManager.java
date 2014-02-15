@@ -1,28 +1,28 @@
 package eu.andlabs.andengine.utilities.resource;
 
 import org.andengine.engine.Engine;
+import org.andengine.ui.activity.BaseGameActivity;
 
 import android.util.Log;
 import eu.andlabs.andengine.utilities.SystemUtils;
 import eu.andlabs.andengine.utilities.SystemUtils.SystemUtilsException;
-import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
 
 public abstract class ResourceManager {
 
     
 
-    private ManagingGameActivity mManager;
+    private BaseGameActivity mManager;
 
     private Engine mEngine;
 
 
-    protected ResourceManager(ManagingGameActivity pManager, Engine pEngine) {
+    protected ResourceManager(BaseGameActivity pManager, Engine pEngine) {
         this.mManager = pManager;
         this.mEngine = pEngine;
     }
 
 
-    public ManagingGameActivity getManager() {
+    public BaseGameActivity getManager() {
         return this.mManager;
     }
 

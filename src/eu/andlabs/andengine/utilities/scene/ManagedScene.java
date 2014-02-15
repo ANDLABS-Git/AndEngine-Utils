@@ -6,20 +6,21 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.font.FontManager;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.ui.activity.BaseGameActivity;
 
 import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
 
 public abstract class ManagedScene extends Scene implements BackKeyListener {
 
     protected Engine mEngine;
-    protected ManagingGameActivity mContext;
+    protected BaseGameActivity mContext;
 
-    protected ManagedScene(ManagingGameActivity pContext, Engine pEngine) {
+    protected ManagedScene(BaseGameActivity pContext, Engine pEngine) {
         this.mContext = pContext;
         this.mEngine = pEngine;
     }
 
-    protected ManagingGameActivity getManager() {
+    protected BaseGameActivity getManager() {
         return this.mContext;
     }
 
@@ -44,5 +45,7 @@ public abstract class ManagedScene extends Scene implements BackKeyListener {
     public abstract void onCreateEntities();
 
     public abstract void onDisposeResources();
+    
+    public abstract ManagedLoadingScene getLoadingScene();
 
 }
