@@ -8,16 +8,14 @@ import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
 
-import eu.andlabs.andengine.utilities.activity.ManagingGameActivity;
-
 public abstract class ManagedScene extends Scene implements BackKeyListener {
 
     protected Engine mEngine;
     protected BaseGameActivity mContext;
 
-    protected ManagedScene(BaseGameActivity pContext, Engine pEngine) {
+    protected ManagedScene(BaseGameActivity pContext) {
         this.mContext = pContext;
-        this.mEngine = pEngine;
+        this.mEngine = pContext.getEngine();
     }
 
     protected BaseGameActivity getManager() {

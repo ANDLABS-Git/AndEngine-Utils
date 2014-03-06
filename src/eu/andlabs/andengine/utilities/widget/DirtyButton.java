@@ -1,6 +1,5 @@
 package eu.andlabs.andengine.utilities.widget;
 
-import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
@@ -28,7 +27,6 @@ public class DirtyButton {
 
 	private OnClickListener mListener;
 
-	private IEntity mParentEntity;
 
 	public DirtyButton(final int pId, final float pX, final float pY,
 			final TextureRegion pStateInitial,
@@ -83,7 +81,6 @@ public class DirtyButton {
 		pScene.registerTouchArea(this.mInitial);
 		pScene.attachChild(this.mPressed);
 
-		this.mParentEntity = pScene;
 	}
 	
 	public void attachToEntity(final Scene pScene, final Sprite pEntity) {
@@ -91,7 +88,6 @@ public class DirtyButton {
         pScene.registerTouchArea(this.mInitial);
         pEntity.attachChild(this.mPressed);
 
-        this.mParentEntity = pEntity;
     }
     
 	

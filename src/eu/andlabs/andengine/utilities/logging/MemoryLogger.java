@@ -7,7 +7,6 @@ import org.andengine.util.debug.Debug.DebugLevel;
 
 import eu.andlabs.andengine.utilities.BuildConfig;
 import eu.andlabs.andengine.utilities.SystemUtils;
-import eu.andlabs.andengine.utilities.SystemUtils.SystemUtilsException;
 
 
 

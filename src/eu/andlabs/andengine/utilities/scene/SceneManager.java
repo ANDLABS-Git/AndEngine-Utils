@@ -29,21 +29,15 @@ public abstract class SceneManager {
     public static final int SCENE_GAME = SCENE_MENU + 1;
 
 
-    public SceneManager(ManagingGameActivity pContext, Engine pEngine) {
-        if (pEngine == null) {
-            throw new NullPointerException("pEngine must not be null");
-        }
+    public SceneManager(ManagingGameActivity pContext) {
         this.mContext = pContext;
-        this.mEngine = pEngine;
+        this.mEngine = pContext.getEngine();
     }
 
 
-    public SceneManager(ManagingLayoutGameActivity pContext, Engine pEngine) {
-        if (pEngine == null) {
-            throw new NullPointerException("pEngine must not be null");
-        }
+    public SceneManager(ManagingLayoutGameActivity pContext) {
         this.mLayoutContext = pContext;
-        this.mEngine = pEngine;
+        this.mEngine = pContext.getEngine();
     }
 
 
