@@ -101,7 +101,7 @@ public class Utils {
         }
     }
     
-    public ITiledTextureRegion tileTextureRegion(ITextureRegion pTextureRegion, int pColumns, int pRows) {
+    public static ITiledTextureRegion tileTextureRegion(ITextureRegion pTextureRegion, int pColumns, int pRows) {
         return TiledTextureRegion.create(pTextureRegion.getTexture(), (int) pTextureRegion.getTextureX(),
                 (int) pTextureRegion.getTextureY(), (int) pTextureRegion.getWidth(), (int) pTextureRegion.getHeight(),
                 pColumns, pRows, pTextureRegion.isRotated());
