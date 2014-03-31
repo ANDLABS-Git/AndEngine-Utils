@@ -13,6 +13,8 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
 import org.andengine.opengl.texture.bitmap.BitmapTexture;
 import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
@@ -97,5 +99,11 @@ public class Utils {
         for(int i = sTextures.size() - 1; i>= 0; i--) {
             sTextures.get(i).unload();
         }
+    }
+    
+    public ITiledTextureRegion tileTextureRegion(ITextureRegion pTextureRegion, int pColumns, int pRows) {
+        return TiledTextureRegion.create(pTextureRegion.getTexture(), (int) pTextureRegion.getTextureX(),
+                (int) pTextureRegion.getTextureY(), (int) pTextureRegion.getWidth(), (int) pTextureRegion.getHeight(),
+                pColumns, pRows, pTextureRegion.isRotated());
     }
 }
