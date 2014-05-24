@@ -33,12 +33,22 @@ public class ScrollableShapeView extends RectangularShape {
 
     private float mInitialHeight;
 
+    private float mCreationX;
+    private float mCreationY;
+    private float mCreationWidth;
+    private float mCreationHeight;
+
 
     public ScrollableShapeView(float pX, float pY, float pWidth, float pHeight) {
         super(pX, pY, pWidth, 0, PositionColorTextureCoordinatesShaderProgram.getInstance());
 
         setY(pY, false);
         setHeight(pHeight, false);
+
+        this.mCreationX = pX;
+        this.mCreationY = pY;
+        this.mCreationWidth = pWidth;
+        this.mCreationHeight = pHeight;
     }
 
 
@@ -124,30 +134,37 @@ public class ScrollableShapeView extends RectangularShape {
             this.mDown = false;
         }
 
-        return true;
+
+        // Only consumed when in the original rectangle of this entity
+        final float touchX = pSceneTouchEvent.getX();
+        final float touchY = pSceneTouchEvent.getY();
+        if ((touchX >= mCreationX && touchX <= mCreationX + mCreationWidth)
+                && (touchY >= mCreationY && touchY <= mCreationY + mCreationHeight)) {
+            return true;
+        }
+        return false;
     }
 
 
     private float getBorderedY(float pNewY) {
         final float topBorder = getTopBorder();
         final float bottomBorder = getBottomBorder();
-        if(pNewY > topBorder) {
+        if (pNewY > topBorder) {
             return topBorder;
         }
-        
-        if(pNewY + getHeight() < bottomBorder) {
+
+        if (pNewY + getHeight() < bottomBorder) {
             return bottomBorder - getHeight();
         }
-        
-        return  pNewY;
+
+        return pNewY;
     }
 
 
     @SuppressWarnings("unused")
     private boolean checkBounds(final float pNewY) {
 
-        return pNewY <= getTopBorder()
-                && pNewY + getHeight() >= getBottomBorder();
+        return pNewY <= getTopBorder() && pNewY + getHeight() >= getBottomBorder();
     }
 
 
