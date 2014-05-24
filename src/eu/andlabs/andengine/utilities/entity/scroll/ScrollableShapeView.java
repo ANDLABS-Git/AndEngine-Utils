@@ -11,7 +11,7 @@ public class ScrollableShapeView extends RectangularShape {
 
     private static final float OVERSCROLL_TOLLERANCE = 0f;
 
-    private static final float TAB_SIZE_DEFAULT = 3;
+    private static final float TAB_SIZE_DEFAULT = 5;
 
     private RectangularShape mScrollbar;
 
