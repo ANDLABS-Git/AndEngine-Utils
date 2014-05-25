@@ -40,8 +40,6 @@ public class ScrollableShapeView extends RectangularShape {
     private float mCreationHeight;
 
 
-
-
     public ScrollableShapeView(float pX, float pY, float pWidth, float pHeight) {
         super(pX, pY, pWidth, 0, PositionColorTextureCoordinatesShaderProgram.getInstance());
 
@@ -86,10 +84,8 @@ public class ScrollableShapeView extends RectangularShape {
         super.setY(pY);
         if (pScroll) {
             setScrollBarPosition(pY);
-           setY(pY);
         } else {
             this.mYPosition = pY;
-            super.setY(pY);
         }
     }
 
