@@ -135,7 +135,7 @@ public class ScrollableShapeView extends RectangularShape {
         }
 
 
-        // Only consumed when in the original rectangle of this entity
+        // Only consumed when in the original rectangle of the ScrollableShapeView.
         final float touchX = pSceneTouchEvent.getX();
         final float touchY = pSceneTouchEvent.getY();
         if ((touchX >= mCreationX && touchX <= mCreationX + mCreationWidth)
