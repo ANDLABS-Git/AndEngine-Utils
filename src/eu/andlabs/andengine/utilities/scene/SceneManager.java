@@ -1,13 +1,11 @@
 package eu.andlabs.andengine.utilities.scene;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import org.andengine.engine.Engine;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.color.Color;
 import org.andengine.util.modifier.IModifier;
@@ -21,7 +19,7 @@ public abstract class SceneManager {
 
     private Engine mEngine;
 
-     private ManagingGameActivity mContext;
+    private ManagingGameActivity mContext;
 
     private ManagingLayoutGameActivity mLayoutContext;
 
@@ -44,7 +42,7 @@ public abstract class SceneManager {
     public void changeScene(final ManagedScene pScene) {
         // Show the loading screen,
         final ManagedLoadingScene loadingScene = pScene.getLoadingScene();
-        loadingScene.onCreateResources(null);
+        loadingScene.onCreateResources();
         loadingScene.onCreateEntities();
         this.mEngine.setScene(loadingScene);
 
@@ -73,30 +71,45 @@ public abstract class SceneManager {
                 // Load new resources
                 SceneManager.this.mCurrentScene.onCreateResources(loadingScene);
 
-                SceneManager.this.mCurrentScene.onCreateEntities();
 
                 // Set the new scene with a nice alpha fade out/in
-                final Rectangle fadeRect = new Rectangle(0, 0, 853, 480, mCurrentScene.getVertexBufferObjectManager());
-                fadeRect.setColor(Color.TRANSPARENT);
-                fadeRect.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+                final HUD fadeHud = new HUD();
+                fadeHud.setColor(Color.BLACK);
 
-                fadeRect.registerEntityModifier(new FadeInModifier(0.3f, new IEntityModifierListener() {
+                fadeHud.registerEntityModifier(new FadeInModifier(0.3f, new IEntityModifierListener() {
 
                     @Override
                     public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
-
                     }
 
 
                     @Override
                     public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-                        fadeRect.detachSelf();
-                        mCurrentScene.attachChild(fadeRect);
+                        SceneManager.this.mCurrentScene.onCreateEntities();
+                        SceneManager.this.mCurrentScene.attachChild(fadeHud);
                         SceneManager.this.mEngine.setScene(mCurrentScene);
-                        fadeRect.registerEntityModifier(new FadeOutModifier(0.3f));
+
+                        fadeHud.registerEntityModifier(new FadeOutModifier(0.3f, new IEntityModifierListener() {
+
+                            @Override
+                            public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                            }
+
+
+                            @Override
+                            public void onModifierFinished(IModifier<IEntity> pModifier, final IEntity pItem) {
+                                SceneManager.this.mEngine.runOnUpdateThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        pItem.detachSelf();
+                                    }
+                                });
+                            }
+                        }));
                     }
                 }));
-                loadingScene.attachChild(fadeRect);
+                SceneManager.this.mEngine.getCamera().setHUD(fadeHud);
             }
         };
 
@@ -106,7 +119,7 @@ public abstract class SceneManager {
 
 
     protected BaseGameActivity getContext() {
-        if(mContext != null) {
+        if (mContext != null) {
             return mContext;
         } else {
             return mLayoutContext;

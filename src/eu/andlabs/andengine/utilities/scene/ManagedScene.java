@@ -2,6 +2,7 @@ package eu.andlabs.andengine.utilities.scene;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.font.FontManager;
 import org.andengine.opengl.texture.TextureManager;

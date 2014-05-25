@@ -4,6 +4,7 @@ import org.andengine.entity.shape.RectangularShape;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 public class ScrollableShapeView extends RectangularShape {
 
@@ -39,6 +40,8 @@ public class ScrollableShapeView extends RectangularShape {
     private float mCreationHeight;
 
 
+
+
     public ScrollableShapeView(float pX, float pY, float pWidth, float pHeight) {
         super(pX, pY, pWidth, 0, PositionColorTextureCoordinatesShaderProgram.getInstance());
 
@@ -49,6 +52,7 @@ public class ScrollableShapeView extends RectangularShape {
         this.mCreationY = pY;
         this.mCreationWidth = pWidth;
         this.mCreationHeight = pHeight;
+
     }
 
 
@@ -67,7 +71,7 @@ public class ScrollableShapeView extends RectangularShape {
         if (pAttachingChildren) {
             super.setHeight(pHeight);
         } else {
-            mInitialHeight = pHeight;
+            this.mInitialHeight = pHeight;
         }
     }
 
@@ -82,8 +86,10 @@ public class ScrollableShapeView extends RectangularShape {
         super.setY(pY);
         if (pScroll) {
             setScrollBarPosition(pY);
+           setY(pY);
         } else {
-            mYPosition = pY;
+            this.mYPosition = pY;
+            super.setY(pY);
         }
     }
 

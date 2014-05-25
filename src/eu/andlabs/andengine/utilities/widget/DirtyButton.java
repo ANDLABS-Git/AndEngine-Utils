@@ -1,5 +1,6 @@
 package eu.andlabs.andengine.utilities.widget;
 
+import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
@@ -13,137 +14,167 @@ import android.view.MotionEvent;
  * A simple and dirty button
  * 
  * @author Johannes Borchardt
- * 
  */
 public class DirtyButton {
 
-	private Sprite mInitial;
-	private Sprite mPressed;
+    private Sprite mInitial;
+    private Sprite mPressed;
 
-	private float mX;
-	private float mY;
+    private float mX;
+    private float mY;
 
-	private int mId;
+    private int mId;
 
-	private OnClickListener mListener;
+    private OnClickListener mListener;
 
 
-	public DirtyButton(final int pId, final float pX, final float pY,
-			final TextureRegion pStateInitial,
-			final TextureRegion pStatePressed,
-			final VertexBufferObjectManager pVertexBufferObjectManager) {
-		this.mId = pId;
-		this.mX = pX;
-		this.mY = pY;
+    public DirtyButton(final int pId, final float pX, final float pY, final TextureRegion pStateInitial,
+            final TextureRegion pStatePressed, final VertexBufferObjectManager pVertexBufferObjectManager) {
+        this.mId = pId;
+        this.mX = pX;
+        this.mY = pY;
 
-		this.mPressed = new Sprite(pX, pY, pStatePressed,
-				pVertexBufferObjectManager);
-		this.mPressed.setVisible(false);
+        this.mPressed = new Sprite(pX, pY, pStatePressed, pVertexBufferObjectManager);
+        this.mPressed.setVisible(false);
 
-		this.mInitial = new Sprite(pX, pY, pStateInitial,
-				pVertexBufferObjectManager) {
+        this.mInitial = new Sprite(pX, pY, pStateInitial, pVertexBufferObjectManager) {
 
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
-				if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN) {
-					DirtyButton.this.mPressed.setVisible(true);
-					DirtyButton.this.mInitial.setVisible(false);
-				} else if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_UP) {
-				    DirtyButton.this.mInitial.setVisible(true);
-				    DirtyButton.this.mPressed.setVisible(false);
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
+                if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN) {
+                    DirtyButton.this.mInitial.setVisible(false);
+                    DirtyButton.this.mPressed.setVisible(true);
+                } else if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_UP) {
+                    DirtyButton.this.mInitial.setVisible(true);
+                    DirtyButton.this.mPressed.setVisible(false);
 
-					if (DirtyButton.this.mListener != null) {
-					    DirtyButton.this.mListener.onClick(mId);
-					}
-				}
-				return true;
-			}
-		};
-	}
+                    if (DirtyButton.this.mListener != null) {
+                        DirtyButton.this.mListener.onClick(mId);
+                    }
+                }
+                return true;
+            }
+        };
+    }
 
-	public void setSize(final float pWidth, final float pHeight) {
-		this.mInitial.setSize(pWidth, pHeight);
-		this.mPressed.setSize(pWidth, pHeight);
-	}
 
-	public void setScale(final float pScale) {
-		this.mInitial.setScale(pScale);
-		this.mPressed.setScale(pScale);
-	}
+    public void setSize(final float pWidth, final float pHeight) {
+        this.mInitial.setSize(pWidth, pHeight);
+        this.mPressed.setSize(pWidth, pHeight);
+    }
 
-	public void setOnClickListener(final OnClickListener pListener) {
-		this.mListener = pListener;
-	}
 
-	public void attachToScene(final Scene pScene) {
-	    pScene.attachChild(this.mInitial);
-		pScene.registerTouchArea(this.mInitial);
-		pScene.attachChild(this.mPressed);
+    public void setScale(final float pScale) {
+        this.mInitial.setScale(pScale);
+        this.mPressed.setScale(pScale);
+    }
 
-	}
-	
-	public void attachToEntity(final Scene pScene, final Sprite pEntity) {
-        pEntity.attachChild(this.mInitial);
+
+    public void setOnClickListener(final OnClickListener pListener) {
+        this.mListener = pListener;
+    }
+
+
+    public void attachToScene(final Scene pScene) {
+        pScene.attachChild(this.mInitial);
         pScene.registerTouchArea(this.mInitial);
-        pEntity.attachChild(this.mPressed);
+        pScene.attachChild(this.mPressed);
+    }
+
+    public void attachToEntity(final Scene pScene, final IEntity pEntity) {
+        attachToEntity(pScene, pEntity, true);
 
     }
+
+    public void attachToEntity(final Scene pScene, final IEntity pEntity, boolean pRegisterTouchArea) {
+        pEntity.attachChild(this.mInitial);
+        pEntity.attachChild(this.mPressed);
+
+        if(pRegisterTouchArea) {
+            pScene.registerTouchArea(this.mInitial);
+        }
+    }
     
-	
-	public float getWidth() {
-		return this.mInitial.getWidth();
-	}
+    public void setCullingEnabled(boolean pEnabled) {
+        this.mInitial.setCullingEnabled(pEnabled);
+        this.mPressed.setCullingEnabled(pEnabled);
+    }
 
-	public float getHeight() {
-		return this.mInitial.getHeight();
-	}
 
-	public float getX() {
-		return this.mX;
-	}
 
-	public float getY() {
-		return this.mY;
-	}
+    public void registerTouchArea(final Scene pScene) {
+        pScene.registerTouchArea(this.mInitial);
+    }
 
-	public void setRotation(final float pRotation) {
-		this.mInitial.setRotation(pRotation);
-		this.mPressed.setRotation(pRotation);
-	}
 
-	public void setFlippedVertical(boolean pVertical) {
-		this.mInitial.setFlippedVertical(pVertical);
-		this.mPressed.setFlippedVertical(pVertical);
-	}
+    public void setZIndex(int pIndex) {
+        this.mInitial.setZIndex(pIndex);
+        this.mPressed.setZIndex(pIndex);
+    }
 
-	public void setFlippedHorizontal(boolean pHorizontal) {
-	    this.mInitial.setFlippedHorizontal(pHorizontal);
-	    this.mPressed.setFlippedHorizontal(pHorizontal);
-	}
 
-	public void setFlipped(final boolean pHorizontal, final boolean pVertical) {
-		setFlippedHorizontal(pHorizontal);
-		setFlippedVertical(pVertical);
-	}
-	
-	public boolean detachSelf() {
-	    return this.mInitial.detachSelf() && this.mPressed.detachSelf();
-	}
-	
-	public void registerEntityModifier(IEntityModifier pModifier) {
-	    this.mInitial.registerEntityModifier(pModifier);
-	    this.mPressed.registerEntityModifier(pModifier);
-        
-	}
+    public float getWidth() {
+        return this.mInitial.getWidth();
+    }
 
-	/**
-	 * Yet another OnClickListener
-	 * 
-	 * @author Johannes Borchardt
-	 * 
-	 */
-	public static interface OnClickListener {
-		public void onClick(final int pId);
-	}
+
+    public float getHeight() {
+        return this.mInitial.getHeight();
+    }
+
+
+    public float getX() {
+        return this.mX;
+    }
+
+
+    public float getY() {
+        return this.mY;
+    }
+
+
+    public void setRotation(final float pRotation) {
+        this.mInitial.setRotation(pRotation);
+        this.mPressed.setRotation(pRotation);
+    }
+
+
+    public void setFlippedVertical(boolean pVertical) {
+        this.mInitial.setFlippedVertical(pVertical);
+        this.mPressed.setFlippedVertical(pVertical);
+    }
+
+
+    public void setFlippedHorizontal(boolean pHorizontal) {
+        this.mInitial.setFlippedHorizontal(pHorizontal);
+        this.mPressed.setFlippedHorizontal(pHorizontal);
+    }
+
+
+    public void setFlipped(final boolean pHorizontal, final boolean pVertical) {
+        setFlippedHorizontal(pHorizontal);
+        setFlippedVertical(pVertical);
+    }
+
+
+    public boolean detachSelf() {
+        return this.mInitial.detachSelf() && this.mPressed.detachSelf();
+    }
+
+
+    public void registerEntityModifier(IEntityModifier pModifier) {
+        this.mInitial.registerEntityModifier(pModifier);
+        this.mPressed.registerEntityModifier(pModifier);
+
+    }
+
+    /**
+     * Yet another OnClickListener
+     * 
+     * @author Johannes Borchardt
+     */
+    public static interface OnClickListener {
+
+        public void onClick(final int pId);
+    }
 }
