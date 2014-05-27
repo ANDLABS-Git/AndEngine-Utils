@@ -103,22 +103,23 @@ public class ScrollableShapeView extends RectangularShape {
 
     @Override
     public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+        if (getHeight() > mCreationHeight) { // Only move when the view is movable, i.e. is higher than it was intentionally.
+            if (pSceneTouchEvent.isActionDown()) {
+                this.mYDown = pSceneTouchEvent.getY();
+                this.mYInitial = getY();
 
-        if (pSceneTouchEvent.isActionDown()) {
-            this.mYDown = pSceneTouchEvent.getY();
-            this.mYInitial = getY();
+                this.mDown = true;
+                this.mYMove = pSceneTouchEvent.getY();
+            }
 
-            this.mDown = true;
-            this.mYMove = pSceneTouchEvent.getY();
-        }
+            if (pSceneTouchEvent.isActionMove()) {
+                final float delta = pSceneTouchEvent.getY() - this.mYMove;
 
-        if (pSceneTouchEvent.isActionMove()) {
-            final float delta = pSceneTouchEvent.getY() - this.mYMove;
+                float newY = getY() + delta;
+                setY(getBorderedY(newY), true);
 
-            float newY = getY() + delta;
-            setY(getBorderedY(newY), true);
-
-            this.mYMove = pSceneTouchEvent.getY();
+                this.mYMove = pSceneTouchEvent.getY();
+            }
         }
 
         if (pSceneTouchEvent.isActionUp()) {
