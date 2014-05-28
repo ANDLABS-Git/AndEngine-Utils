@@ -5,13 +5,16 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
 
+import android.util.Log;
+import android.view.MotionEvent;
+
 public class ScrollableShapeView extends RectangularShape {
 
     private static final float SCROLL_TOLLERANCE = 1;
 
     private static final float OVERSCROLL_TOLLERANCE = 0f;
 
-    private static final float TAB_SIZE_DEFAULT = 5;
+    private static final float TAB_SIZE_DEFAULT = 10;
 
     private RectangularShape mScrollbar;
 
@@ -125,6 +128,8 @@ public class ScrollableShapeView extends RectangularShape {
             final float delta = pSceneTouchEvent.getY() - this.mYDown;
 
             if (Math.abs(delta) < mTabSize) { // no fling, just a tab
+                Log.d("ScrollableShapeView", "Passing on touch evenet");
+//                pSceneTouchEvent.getMotionEvent().setAction(MotionEvent.ACTION_DOWN);
                 return false;
             }
 

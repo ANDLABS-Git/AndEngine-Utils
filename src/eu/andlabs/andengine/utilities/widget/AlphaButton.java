@@ -5,7 +5,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import android.view.MotionEvent;
+import android.util.Log;
 import eu.andlabs.andengine.utilities.widget.DirtyButton.OnClickListener;
 
 /**
@@ -35,15 +35,19 @@ public class AlphaButton extends Sprite {
     @Override
     public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
 
-        if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN) {
+        Log.d("ScrollableShapeView", "received touch event");
+
+        if (pSceneTouchEvent.isActionDown()) {
             setAlpha(ALPHA_HALF);
-        } else if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_UP) {
+        } else if (pSceneTouchEvent.isActionMove() || pSceneTouchEvent.isActionOutside() || pSceneTouchEvent.isActionCancel()) {
+            setAlpha(ALPHA_FULL);
+        } else if (pSceneTouchEvent.isActionUp()) {
             setAlpha(ALPHA_FULL);
             if (mListener != null) {
                 this.mListener.onClick(this.mId);
             }
         }
-        return true;
+        return false;
     }
 
 
