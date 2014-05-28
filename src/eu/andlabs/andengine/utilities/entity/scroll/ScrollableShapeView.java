@@ -4,7 +4,6 @@ import org.andengine.entity.shape.RectangularShape;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
-import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 public class ScrollableShapeView extends RectangularShape {
 

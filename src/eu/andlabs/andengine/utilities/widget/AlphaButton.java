@@ -12,7 +12,6 @@ import eu.andlabs.andengine.utilities.widget.DirtyButton.OnClickListener;
  * A simple alpha button
  * 
  * @author Johannes Borchardt
- * 
  */
 public class AlphaButton extends Sprite {
 
@@ -24,17 +23,17 @@ public class AlphaButton extends Sprite {
 
     private OnClickListener mListener;
 
-    public AlphaButton(int pId, float pX, float pY,
-            ITextureRegion pTextureRegion,
+
+    public AlphaButton(int pId, float pX, float pY, ITextureRegion pTextureRegion,
             VertexBufferObjectManager pVertexBufferObjectManager) {
         super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
 
         this.mId = pId;
     }
 
+
     @Override
-    public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-            float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
+    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
 
         if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN) {
             setAlpha(ALPHA_HALF);
@@ -46,6 +45,17 @@ public class AlphaButton extends Sprite {
         }
         return true;
     }
+
+
+    @Override
+    public void setAlpha(float pAlpha) {
+        super.setAlpha(pAlpha);
+
+        for (int i = 0; i < getChildCount(); i++) {
+            getChildByIndex(i).setAlpha(pAlpha);
+        }
+    }
+
 
     public void setOnClickListener(OnClickListener pListener) {
         this.mListener = pListener;
