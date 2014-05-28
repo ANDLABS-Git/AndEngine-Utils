@@ -1,12 +1,12 @@
 package eu.andlabs.andengine.utilities.entity.scroll;
 
+import org.andengine.entity.IEntity;
 import org.andengine.entity.shape.RectangularShape;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
 
 import android.util.Log;
-import android.view.MotionEvent;
 
 public class ScrollableShapeView extends RectangularShape {
 
@@ -129,7 +129,7 @@ public class ScrollableShapeView extends RectangularShape {
 
             if (Math.abs(delta) < mTabSize) { // no fling, just a tab
                 Log.d("ScrollableShapeView", "Passing on touch evenet");
-//                pSceneTouchEvent.getMotionEvent().setAction(MotionEvent.ACTION_DOWN);
+                // pSceneTouchEvent.getMotionEvent().setAction(MotionEvent.ACTION_DOWN);
                 return false;
             }
 
@@ -246,4 +246,27 @@ public class ScrollableShapeView extends RectangularShape {
     }
 
 
+    @Override
+    public void setAlpha(float pAlpha) {
+        super.setAlpha(pAlpha);
+
+        if(mScrollbar != null) {
+            this.mScrollbar.setAlpha(pAlpha);
+        }
+        
+        setChildrenAlpha(this, pAlpha);
+    }
+
+
+    private void setChildrenAlpha(IEntity pEntity, float pAlpha) {
+        IEntity entity;
+        for (int i = 0; i < pEntity.getChildCount(); i++) {
+            entity = pEntity.getChildByIndex(i);
+            entity.setAlpha(pAlpha);
+            
+            if(entity.getChildCount() > 0){ // has children
+                setChildrenAlpha(entity, pAlpha);
+            }
+        }
+    }
 }
