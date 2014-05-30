@@ -128,8 +128,6 @@ public class ScrollableShapeView extends RectangularShape {
             final float delta = pSceneTouchEvent.getY() - this.mYDown;
 
             if (Math.abs(delta) < mTabSize) { // no fling, just a tab
-                Log.d("ScrollableShapeView", "Passing on touch evenet");
-                // pSceneTouchEvent.getMotionEvent().setAction(MotionEvent.ACTION_DOWN);
                 return false;
             }
 
@@ -223,6 +221,17 @@ public class ScrollableShapeView extends RectangularShape {
 
     public void setAdapter(ScrollableShapeAdapter pAdapter) {
         if (pAdapter != null) {
+            
+            // Remove the old content
+            detachChildren();
+            setHeight(0);
+
+            // Attach the scrollbar again
+            if(mScrollbar != null) {
+                setScrollBar(mScrollbar);
+            }
+
+            
             this.mAdapter = pAdapter;
             int size = pAdapter.size();
 
@@ -246,14 +255,16 @@ public class ScrollableShapeView extends RectangularShape {
     }
 
 
+
+
     @Override
     public void setAlpha(float pAlpha) {
         super.setAlpha(pAlpha);
 
-        if(mScrollbar != null) {
+        if (mScrollbar != null) {
             this.mScrollbar.setAlpha(pAlpha);
         }
-        
+
         setChildrenAlpha(this, pAlpha);
     }
 
@@ -263,8 +274,8 @@ public class ScrollableShapeView extends RectangularShape {
         for (int i = 0; i < pEntity.getChildCount(); i++) {
             entity = pEntity.getChildByIndex(i);
             entity.setAlpha(pAlpha);
-            
-            if(entity.getChildCount() > 0){ // has children
+
+            if (entity.getChildCount() > 0) { // has children
                 setChildrenAlpha(entity, pAlpha);
             }
         }

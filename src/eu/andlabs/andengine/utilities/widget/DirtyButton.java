@@ -26,6 +26,7 @@ public class DirtyButton {
     private int mId;
 
     private OnClickListener mListener;
+    private boolean mKeepTouchedState;
 
 
     public DirtyButton(final int pId, final float pX, final float pY, final TextureRegion pStateInitial,
@@ -42,11 +43,11 @@ public class DirtyButton {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
                 if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN) {
-                    DirtyButton.this.mInitial.setVisible(false);
-                    DirtyButton.this.mPressed.setVisible(true);
+                    setStateTouched();
                 } else if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_UP) {
-                    DirtyButton.this.mInitial.setVisible(true);
-                    DirtyButton.this.mPressed.setVisible(false);
+                    if (!mKeepTouchedState) {
+                      setStateInitial();
+                    }
 
                     if (DirtyButton.this.mListener != null) {
                         DirtyButton.this.mListener.onClick(mId);
@@ -55,6 +56,31 @@ public class DirtyButton {
                 return true;
             }
         };
+    }
+
+
+    public void setStateInitial() {
+        this.mInitial.setVisible(true);
+        this.mPressed.setVisible(false);
+    }
+
+
+    public void setStateTouched() {
+        this.mInitial.setVisible(false);
+        this.mPressed.setVisible(true);
+    }
+    
+    public void registerEntityModifier(IEntityModifier pModifier) {
+        if(this.mInitial.isVisible()) {
+            this.mInitial.registerEntityModifier(pModifier);
+        } else {
+            this.mPressed.registerEntityModifier(pModifier);
+        }
+    }
+
+
+    public void setKeepTouchedState(boolean pKeep) {
+        this.mKeepTouchedState = pKeep;
     }
 
 
@@ -81,25 +107,27 @@ public class DirtyButton {
         pScene.attachChild(this.mPressed);
     }
 
+
     public void attachToEntity(final Scene pScene, final IEntity pEntity) {
         attachToEntity(pScene, pEntity, true);
 
     }
 
+
     public void attachToEntity(final Scene pScene, final IEntity pEntity, boolean pRegisterTouchArea) {
         pEntity.attachChild(this.mInitial);
         pEntity.attachChild(this.mPressed);
 
-        if(pRegisterTouchArea) {
+        if (pRegisterTouchArea) {
             pScene.registerTouchArea(this.mInitial);
         }
     }
-    
+
+
     public void setCullingEnabled(boolean pEnabled) {
         this.mInitial.setCullingEnabled(pEnabled);
         this.mPressed.setCullingEnabled(pEnabled);
     }
-
 
 
     public void registerTouchArea(final Scene pScene) {
@@ -162,12 +190,7 @@ public class DirtyButton {
     }
 
 
-    public void registerEntityModifier(IEntityModifier pModifier) {
-        this.mInitial.registerEntityModifier(pModifier);
-        this.mPressed.registerEntityModifier(pModifier);
-
-    }
-
+  
     /**
      * Yet another OnClickListener
      * 
