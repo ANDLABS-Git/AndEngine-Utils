@@ -12,7 +12,7 @@ public class ScrollableShapeView extends RectangularShape {
 
     private static final float SCROLL_TOLLERANCE = 1;
 
-    private static final float OVERSCROLL_TOLLERANCE = 0f;
+    private static final float OVERSCROLL_TOLLERANCE = 0;
 
     private static final float TAB_SIZE_DEFAULT = 10;
 
@@ -225,6 +225,8 @@ public class ScrollableShapeView extends RectangularShape {
             // Remove the old content
             detachChildren();
             setHeight(0);
+            setY(mCreationY);
+            this.mYFinal = mCreationY;
 
             // Attach the scrollbar again
             if(mScrollbar != null) {
