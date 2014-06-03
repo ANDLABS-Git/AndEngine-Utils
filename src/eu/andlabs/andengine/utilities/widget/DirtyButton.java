@@ -46,7 +46,7 @@ public class DirtyButton {
                     setStateTouched();
                 } else if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_UP) {
                     if (!mKeepTouchedState) {
-                      setStateInitial();
+                        setStateInitial();
                     }
 
                     if (DirtyButton.this.mListener != null) {
@@ -69,9 +69,10 @@ public class DirtyButton {
         this.mInitial.setVisible(false);
         this.mPressed.setVisible(true);
     }
-    
+
+
     public void registerEntityModifier(IEntityModifier pModifier) {
-        if(this.mInitial.isVisible()) {
+        if (this.mInitial.isVisible()) {
             this.mInitial.registerEntityModifier(pModifier);
         } else {
             this.mPressed.registerEntityModifier(pModifier);
@@ -135,6 +136,11 @@ public class DirtyButton {
     }
 
 
+    public void unregisterTouchArea(final Scene pScene) {
+        pScene.unregisterTouchArea(this.mInitial);
+    }
+
+
     public void setZIndex(int pIndex) {
         this.mInitial.setZIndex(pIndex);
         this.mPressed.setZIndex(pIndex);
@@ -189,8 +195,11 @@ public class DirtyButton {
         return this.mInitial.detachSelf() && this.mPressed.detachSelf();
     }
 
+    
+    public void setVisible(boolean pVisisble) {
+        this.mInitial.setVisible(pVisisble);
+    }
 
-  
     /**
      * Yet another OnClickListener
      * 

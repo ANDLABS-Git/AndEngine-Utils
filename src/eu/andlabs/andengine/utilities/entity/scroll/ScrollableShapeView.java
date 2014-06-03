@@ -6,8 +6,6 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
 
-import android.util.Log;
-
 public class ScrollableShapeView extends RectangularShape {
 
     private static final float SCROLL_TOLLERANCE = 1;
@@ -215,7 +213,9 @@ public class ScrollableShapeView extends RectangularShape {
     public void setScrollBar(RectangularShape pScrollbar) {
         this.mScrollbar = pScrollbar;
         this.mScrollbar.setY(0);
-        this.attachChild(mScrollbar);
+        if(!mScrollbar.hasParent()) {
+            this.attachChild(mScrollbar);
+        }
     }
 
 
@@ -261,8 +261,8 @@ public class ScrollableShapeView extends RectangularShape {
 
     @Override
     public void setAlpha(float pAlpha) {
-        super.setAlpha(pAlpha);
-
+        // No alpha on the shape view itself, since it should be transparent all the time
+        
         if (mScrollbar != null) {
             this.mScrollbar.setAlpha(pAlpha);
         }
