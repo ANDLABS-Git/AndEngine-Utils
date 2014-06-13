@@ -12,7 +12,7 @@ public class ScrollableShapeView extends RectangularShape {
 
     private static final float OVERSCROLL_TOLLERANCE = 0;
 
-    private static final float TAB_SIZE_DEFAULT = 10;
+    private static final float TAB_SIZE_DEFAULT = 5;
 
     private RectangularShape mScrollbar;
 
@@ -70,6 +70,19 @@ public class ScrollableShapeView extends RectangularShape {
             super.setHeight(pHeight);
         } else {
             this.mInitialHeight = pHeight;
+        }
+
+        setScrollbarVisibility();
+    }
+
+
+    private void setScrollbarVisibility() {
+        if (mScrollbar != null) {
+            if (getHeight() <= mCreationHeight) {
+                this.mScrollbar.setVisible(false);
+            } else {
+                this.mScrollbar.setVisible(true);
+            }
         }
     }
 
@@ -213,15 +226,16 @@ public class ScrollableShapeView extends RectangularShape {
     public void setScrollBar(RectangularShape pScrollbar) {
         this.mScrollbar = pScrollbar;
         this.mScrollbar.setY(0);
-        if(!mScrollbar.hasParent()) {
+        if (!mScrollbar.hasParent()) {
             this.attachChild(mScrollbar);
         }
+        setScrollbarVisibility();
     }
 
 
     public void setAdapter(ScrollableShapeAdapter pAdapter) {
         if (pAdapter != null) {
-            
+
             // Remove the old content
             detachChildren();
             setHeight(0);
@@ -229,11 +243,11 @@ public class ScrollableShapeView extends RectangularShape {
             this.mYFinal = mCreationY;
 
             // Attach the scrollbar again
-            if(mScrollbar != null) {
+            if (mScrollbar != null) {
                 setScrollBar(mScrollbar);
             }
 
-            
+
             this.mAdapter = pAdapter;
             int size = pAdapter.size();
 
@@ -257,12 +271,10 @@ public class ScrollableShapeView extends RectangularShape {
     }
 
 
-
-
     @Override
     public void setAlpha(float pAlpha) {
         // No alpha on the shape view itself, since it should be transparent all the time
-        
+
         if (mScrollbar != null) {
             this.mScrollbar.setAlpha(pAlpha);
         }

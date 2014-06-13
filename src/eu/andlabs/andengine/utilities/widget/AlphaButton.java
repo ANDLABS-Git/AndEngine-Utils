@@ -23,6 +23,8 @@ public class AlphaButton extends Sprite {
 
     private OnClickListener mListener;
 
+    private boolean mAlphaBlock = false;
+
 
     public AlphaButton(int pId, float pX, float pY, ITextureRegion pTextureRegion,
             VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -35,7 +37,6 @@ public class AlphaButton extends Sprite {
     @Override
     public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
 
-        Log.d("ScrollableShapeView", "received touch event");
 
         if (pSceneTouchEvent.isActionDown()) {
             setAlpha(ALPHA_HALF);
@@ -53,11 +54,18 @@ public class AlphaButton extends Sprite {
 
     @Override
     public void setAlpha(float pAlpha) {
-        super.setAlpha(pAlpha);
+        if (!mAlphaBlock) {
+            super.setAlpha(pAlpha);
 
-        for (int i = 0; i < getChildCount(); i++) {
-            getChildByIndex(i).setAlpha(pAlpha);
+            for (int i = 0; i < getChildCount(); i++) {
+                getChildByIndex(i).setAlpha(pAlpha);
+            }
         }
+    }
+
+
+    public void setAlphaBlock(boolean pBlock) {
+        this.mAlphaBlock = pBlock;
     }
 
 
