@@ -5,6 +5,7 @@ import org.andengine.entity.shape.RectangularShape;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
+import org.andengine.util.algorithm.collision.RectangularShapeCollisionChecker;
 
 public class ScrollableShapeView extends RectangularShape {
 
@@ -72,19 +73,38 @@ public class ScrollableShapeView extends RectangularShape {
             this.mInitialHeight = pHeight;
         }
 
-        setScrollbarVisibility();
+        // setScrollbarVisibility();
     }
 
 
-    private void setScrollbarVisibility() {
-        if (mScrollbar != null) {
-            if (getHeight() <= mCreationHeight) {
-                this.mScrollbar.setVisible(false);
-            } else {
-                this.mScrollbar.setVisible(true);
-            }
-        }
-    }
+    // private void setScrollbarVisibility() {
+    // if (mScrollbar != null) {
+    // if (getHeight() <= mCreationHeight) {
+    // this.mScrollbar.setVisible(false);
+    // } else {
+    // this.mScrollbar.setVisible(true);
+    // }
+    // }
+    // }
+
+//    @Override
+//    public boolean contains(final float pX, final float pY) {
+//        final float[] coordinates = convertLocalToSceneCoordinates(pX, pY);
+//        final float touchX = coordinates[0];
+//        final float touchY = coordinates[1];
+//
+//        final float[] creationCoordinates = convertLocalToSceneCoordinates(mCreationX, mCreationHeight);
+//        final float creationX = creationCoordinates[0];
+//        final float creationY = creationCoordinates[1];
+//
+//
+//        if ((touchX >= creationX && touchX <= creationX + mCreationWidth)
+//                && (touchY >= creationY && touchY <= creationY + mCreationHeight)) {
+//            return true;
+//        }
+//
+//        return false;
+//    }
 
 
     @Override
@@ -229,7 +249,7 @@ public class ScrollableShapeView extends RectangularShape {
         if (!mScrollbar.hasParent()) {
             this.attachChild(mScrollbar);
         }
-        setScrollbarVisibility();
+        // setScrollbarVisibility();
     }
 
 

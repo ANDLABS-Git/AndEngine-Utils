@@ -5,7 +5,6 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import android.util.Log;
 import eu.andlabs.andengine.utilities.widget.DirtyButton.OnClickListener;
 
 /**
@@ -46,6 +45,7 @@ public class AlphaButton extends Sprite {
             setAlpha(ALPHA_FULL);
             if (mListener != null) {
                 this.mListener.onClick(this.mId);
+                return true;
             }
         }
         return false;
@@ -73,4 +73,47 @@ public class AlphaButton extends Sprite {
         this.mListener = pListener;
     }
 
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + mId;
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AlphaButton other = (AlphaButton) obj;
+        if (mId != other.mId)
+            return false;
+        return true;
+    }
+
+    
+    
+//  @Override
+//  public boolean contains(final float pX, final float pY) {
+//      final float[] coordinate = convertLocalToSceneCoordinates(pX, pY);
+//      final float touchX = coordinate[0];
+//      final float touchY = coordinate[1];
+//      
+//      final float[] creationCoordinates = convertLocalToSceneCoordinates(getX(), getY());
+//    final float creationX = creationCoordinates[0];
+//    final float creationY = creationCoordinates[1];
+//      
+//      if ((touchX >= creationX && touchX <= creationX + getWidth())
+//              && (touchY >= creationY && touchY <= creationY + getHeight())) {
+//          return true;
+//      }
+//      
+//      return false;
+//  }
 }
