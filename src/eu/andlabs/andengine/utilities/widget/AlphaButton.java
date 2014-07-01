@@ -1,9 +1,13 @@
 package eu.andlabs.andengine.utilities.widget;
 
+import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.DelayModifier;
+import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.modifier.IModifier;
 
 import eu.andlabs.andengine.utilities.widget.DirtyButton.OnClickListener;
 
@@ -38,11 +42,25 @@ public class AlphaButton extends Sprite {
 
 
         if (pSceneTouchEvent.isActionDown()) {
-            setAlpha(ALPHA_HALF);
+            // setAlpha(ALPHA_HALF);
         } else if (pSceneTouchEvent.isActionMove() || pSceneTouchEvent.isActionOutside() || pSceneTouchEvent.isActionCancel()) {
-            setAlpha(ALPHA_FULL);
+            // setAlpha(ALPHA_FULL);
         } else if (pSceneTouchEvent.isActionUp()) {
-            setAlpha(ALPHA_FULL);
+            setAlpha(ALPHA_HALF);
+
+            registerEntityModifier(new DelayModifier(0.1f, new IEntityModifierListener() {
+
+                @Override
+                public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                }
+
+
+                @Override
+                public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                    setAlpha(ALPHA_FULL);
+                }
+            }));
+
             if (mListener != null) {
                 this.mListener.onClick(this.mId);
                 return true;
@@ -96,24 +114,4 @@ public class AlphaButton extends Sprite {
             return false;
         return true;
     }
-
-    
-    
-//  @Override
-//  public boolean contains(final float pX, final float pY) {
-//      final float[] coordinate = convertLocalToSceneCoordinates(pX, pY);
-//      final float touchX = coordinate[0];
-//      final float touchY = coordinate[1];
-//      
-//      final float[] creationCoordinates = convertLocalToSceneCoordinates(getX(), getY());
-//    final float creationX = creationCoordinates[0];
-//    final float creationY = creationCoordinates[1];
-//      
-//      if ((touchX >= creationX && touchX <= creationX + getWidth())
-//              && (touchY >= creationY && touchY <= creationY + getHeight())) {
-//          return true;
-//      }
-//      
-//      return false;
-//  }
 }

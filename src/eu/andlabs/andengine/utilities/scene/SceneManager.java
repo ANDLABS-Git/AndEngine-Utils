@@ -40,6 +40,11 @@ public abstract class SceneManager {
 
 
     public void changeScene(final ManagedScene pScene) {
+        changeScene(pScene, true);
+    }
+
+
+    public void changeScene(final ManagedScene pScene, final boolean pDisposeResources) {
         // Show the loading screen,
         final ManagedLoadingScene loadingScene = pScene.getLoadingScene();
         loadingScene.onCreateResources();
@@ -51,7 +56,7 @@ public abstract class SceneManager {
             @Override
             public void run() {
                 // Dispose all the resources
-                if (SceneManager.this.mCurrentScene != null) {
+                if (SceneManager.this.mCurrentScene != null && pDisposeResources) {
                     SceneManager.this.mCurrentScene.onDisposeResources();
                 }
 
