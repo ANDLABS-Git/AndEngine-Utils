@@ -1,5 +1,6 @@
 package eu.andlabs.andengine.utilities.widget;
 
+import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
@@ -74,12 +75,23 @@ public class AlphaButton extends Sprite {
     public void setAlpha(float pAlpha) {
         if (!mAlphaBlock) {
             super.setAlpha(pAlpha);
+            setAlpha(this, pAlpha);
+        }
+    }
+    
+    private void setAlpha(IEntity pEntity, float pAlpha) {
+        
+        IEntity entity;
+        for (int i = 0; i < pEntity.getChildCount(); i++) {
+            entity = pEntity.getChildByIndex(i);
+            entity.setAlpha(pAlpha);
 
-            for (int i = 0; i < getChildCount(); i++) {
-                getChildByIndex(i).setAlpha(pAlpha);
+            if (entity.getChildCount() > 0) { // has children
+                setAlpha(entity, pAlpha);
             }
         }
     }
+    
 
 
     public void setAlphaBlock(boolean pBlock) {

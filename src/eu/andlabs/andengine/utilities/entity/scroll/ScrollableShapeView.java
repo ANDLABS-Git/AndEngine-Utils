@@ -5,7 +5,6 @@ import org.andengine.entity.shape.RectangularShape;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
-import org.andengine.util.algorithm.collision.RectangularShapeCollisionChecker;
 
 public class ScrollableShapeView extends RectangularShape {
 
@@ -39,6 +38,8 @@ public class ScrollableShapeView extends RectangularShape {
     private float mCreationY;
     private float mCreationWidth;
     private float mCreationHeight;
+
+    private boolean mScrollingEnabled = true;
 
 
     public ScrollableShapeView(float pX, float pY, float pWidth, float pHeight) {
@@ -87,24 +88,24 @@ public class ScrollableShapeView extends RectangularShape {
     // }
     // }
 
-//    @Override
-//    public boolean contains(final float pX, final float pY) {
-//        final float[] coordinates = convertLocalToSceneCoordinates(pX, pY);
-//        final float touchX = coordinates[0];
-//        final float touchY = coordinates[1];
-//
-//        final float[] creationCoordinates = convertLocalToSceneCoordinates(mCreationX, mCreationHeight);
-//        final float creationX = creationCoordinates[0];
-//        final float creationY = creationCoordinates[1];
-//
-//
-//        if ((touchX >= creationX && touchX <= creationX + mCreationWidth)
-//                && (touchY >= creationY && touchY <= creationY + mCreationHeight)) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
+    // @Override
+    // public boolean contains(final float pX, final float pY) {
+    // final float[] coordinates = convertLocalToSceneCoordinates(pX, pY);
+    // final float touchX = coordinates[0];
+    // final float touchY = coordinates[1];
+    //
+    // final float[] creationCoordinates = convertLocalToSceneCoordinates(mCreationX, mCreationHeight);
+    // final float creationX = creationCoordinates[0];
+    // final float creationY = creationCoordinates[1];
+    //
+    //
+    // if ((touchX >= creationX && touchX <= creationX + mCreationWidth)
+    // && (touchY >= creationY && touchY <= creationY + mCreationHeight)) {
+    // return true;
+    // }
+    //
+    // return false;
+    // }
 
 
     @Override
@@ -136,7 +137,8 @@ public class ScrollableShapeView extends RectangularShape {
 
     @Override
     public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-        if (getHeight() > mCreationHeight) { // Only move when the view is movable, i.e. is higher than it was intentionally.
+        if (getHeight() > mCreationHeight && mScrollingEnabled) { // Only move when the view is movable, i.e. is higher than it
+                                                                  // was intentionally, and scrolling is enabled
             if (pSceneTouchEvent.isActionDown()) {
                 this.mYDown = pSceneTouchEvent.getY();
                 this.mYInitial = getY();
@@ -153,21 +155,25 @@ public class ScrollableShapeView extends RectangularShape {
 
                 this.mYMove = pSceneTouchEvent.getY();
             }
-        }
 
-        if (pSceneTouchEvent.isActionUp()) {
-            final float delta = pSceneTouchEvent.getY() - this.mYDown;
+            if (pSceneTouchEvent.isActionUp()) {
+                final float delta = pSceneTouchEvent.getY() - this.mYDown;
 
-            if (Math.abs(delta) < mTabSize) { // no fling, just a tab
+                if (Math.abs(delta) < mTabSize) { // no fling, just a tab
+                    return false;
+                }
+
+                float newY = mYInitial + delta;
+                setY(getBorderedY(newY), true);
+
+                this.mYFinal = mYInitial + delta + delta * 0.50f;
+
+                this.mDown = false;
+            }
+        } else {
+            if (pSceneTouchEvent.isActionUp()) {
                 return false;
             }
-
-            float newY = mYInitial + delta;
-            setY(getBorderedY(newY), true);
-
-            this.mYFinal = mYInitial + delta + delta * 0.50f;
-
-            this.mDown = false;
         }
 
 
@@ -235,6 +241,11 @@ public class ScrollableShapeView extends RectangularShape {
 
     public void setTabSize(float pTabSize) {
         this.mTabSize = pTabSize;
+    }
+
+
+    public void setScrollingEnabled(boolean pEnabled) {
+        this.mScrollingEnabled = pEnabled;
     }
 
 
