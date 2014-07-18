@@ -1,6 +1,5 @@
 package eu.andlabs.andengine.utilities.widget;
 
-import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
@@ -29,12 +28,15 @@ public class AlphaButton extends Sprite {
 
     private boolean mAlphaBlock = false;
 
+    private boolean mDirectAlphaReaction;
 
-    public AlphaButton(int pId, float pX, float pY, ITextureRegion pTextureRegion,
+
+    public AlphaButton(int pId, float pX, float pY, boolean pDirectAlphaReaction, ITextureRegion pTextureRegion,
             VertexBufferObjectManager pVertexBufferObjectManager) {
         super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
 
         this.mId = pId;
+        this.mDirectAlphaReaction = pDirectAlphaReaction;
     }
 
 
@@ -43,31 +45,39 @@ public class AlphaButton extends Sprite {
 
 
         if (pSceneTouchEvent.isActionDown()) {
-            // setAlpha(ALPHA_HALF);
+            if (mDirectAlphaReaction) {
+                setAlpha(ALPHA_HALF);
+            }
         } else if (pSceneTouchEvent.isActionMove() || pSceneTouchEvent.isActionOutside() || pSceneTouchEvent.isActionCancel()) {
-            // setAlpha(ALPHA_FULL);
+            if (mDirectAlphaReaction) {
+                setAlpha(ALPHA_FULL);
+            }
         } else if (pSceneTouchEvent.isActionUp()) {
-            setAlpha(ALPHA_HALF);
+            if (mDirectAlphaReaction) {
+                setAlpha(ALPHA_FULL);
+            } else {
 
-            registerEntityModifier(new DelayModifier(0.1f, new IEntityModifierListener() {
+                setAlpha(ALPHA_HALF);
 
-                @Override
-                public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
-                }
+                registerEntityModifier(new DelayModifier(0.1f, new IEntityModifierListener() {
+
+                    @Override
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                    }
 
 
-                @Override
-                public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-                    setAlpha(ALPHA_FULL);
-                }
-            }));
-
+                    @Override
+                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                        setAlpha(ALPHA_FULL);
+                    }
+                }));
+            }
             if (mListener != null) {
                 this.mListener.onClick(this.mId);
                 return true;
             }
         }
-        return false;
+        return mDirectAlphaReaction;
     }
 
 
@@ -78,9 +88,10 @@ public class AlphaButton extends Sprite {
             setAlpha(this, pAlpha);
         }
     }
-    
+
+
     private void setAlpha(IEntity pEntity, float pAlpha) {
-        
+
         IEntity entity;
         for (int i = 0; i < pEntity.getChildCount(); i++) {
             entity = pEntity.getChildByIndex(i);
@@ -91,7 +102,6 @@ public class AlphaButton extends Sprite {
             }
         }
     }
-    
 
 
     public void setAlphaBlock(boolean pBlock) {

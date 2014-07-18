@@ -77,7 +77,7 @@ public class DirtyButton {
 
     public void registerEntityModifier(IEntityModifier pModifier) {
         if (pModifier instanceof MoveByModifier || pModifier instanceof MoveXModifier || pModifier instanceof MoveModifier
-                || pModifier instanceof MoveYModifier) {
+                || pModifier instanceof MoveYModifier) { // Move modifier need to be applied to both states
             this.mInitial.registerEntityModifier(pModifier);
             this.mPressed.registerEntityModifier(pModifier);
         } else if (this.mInitial.isVisible()) {
