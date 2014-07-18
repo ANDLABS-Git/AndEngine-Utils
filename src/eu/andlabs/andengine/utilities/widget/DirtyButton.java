@@ -2,6 +2,10 @@ package eu.andlabs.andengine.utilities.widget;
 
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.IEntityModifier;
+import org.andengine.entity.modifier.MoveByModifier;
+import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.MoveXModifier;
+import org.andengine.entity.modifier.MoveYModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
@@ -72,7 +76,11 @@ public class DirtyButton {
 
 
     public void registerEntityModifier(IEntityModifier pModifier) {
-        if (this.mInitial.isVisible()) {
+        if (pModifier instanceof MoveByModifier || pModifier instanceof MoveXModifier || pModifier instanceof MoveModifier
+                || pModifier instanceof MoveYModifier) {
+            this.mInitial.registerEntityModifier(pModifier);
+            this.mPressed.registerEntityModifier(pModifier);
+        } else if (this.mInitial.isVisible()) {
             this.mInitial.registerEntityModifier(pModifier);
         } else {
             this.mPressed.registerEntityModifier(pModifier);
@@ -195,7 +203,7 @@ public class DirtyButton {
         return this.mInitial.detachSelf() && this.mPressed.detachSelf();
     }
 
-    
+
     public void setVisible(boolean pVisisble) {
         this.mInitial.setVisible(pVisisble);
     }
