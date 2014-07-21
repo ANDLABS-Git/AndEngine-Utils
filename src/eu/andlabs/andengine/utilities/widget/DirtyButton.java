@@ -32,7 +32,9 @@ public class DirtyButton {
     private OnClickListener mListener;
     private boolean mKeepTouchedState;
 
+    private boolean mEnabled = true;
 
+    
     public DirtyButton(final int pId, final float pX, final float pY, final TextureRegion pStateInitial,
             final TextureRegion pStatePressed, final VertexBufferObjectManager pVertexBufferObjectManager) {
         this.mId = pId;
@@ -44,16 +46,17 @@ public class DirtyButton {
 
         this.mInitial = new Sprite(pX, pY, pStateInitial, pVertexBufferObjectManager) {
 
+
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pPTouchAreaLocalX, float pPTouchAreaLocalY) {
-                if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN) {
+                if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_DOWN && mEnabled) {
                     setStateTouched();
                 } else if (pSceneTouchEvent.getMotionEvent().getAction() == MotionEvent.ACTION_UP) {
                     if (!mKeepTouchedState) {
                         setStateInitial();
                     }
 
-                    if (DirtyButton.this.mListener != null) {
+                    if (DirtyButton.this.mListener != null && mEnabled) {
                         DirtyButton.this.mListener.onClick(mId);
                     }
                 }
@@ -85,6 +88,15 @@ public class DirtyButton {
         } else {
             this.mPressed.registerEntityModifier(pModifier);
         }
+    }
+
+
+    public void setAlpha(final float pAlpha) {
+        this.mInitial.setAlpha(pAlpha);
+    }
+    
+    public void setEnabled(final boolean pEnabled) {
+        this.mEnabled = pEnabled;
     }
 
 
