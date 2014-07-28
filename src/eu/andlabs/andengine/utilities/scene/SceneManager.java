@@ -55,6 +55,13 @@ public abstract class SceneManager {
 
             @Override
             public void run() {
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
                 // Dispose all the resources
                 if (SceneManager.this.mCurrentScene != null && pDisposeResources) {
                     SceneManager.this.mCurrentScene.onDisposeResources();

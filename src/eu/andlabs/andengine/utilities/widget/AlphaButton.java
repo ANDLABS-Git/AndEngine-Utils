@@ -22,6 +22,8 @@ public class AlphaButton extends Sprite {
 
     private static final float ALPHA_FULL = 1f;
 
+    private static final float PRESSED_SIZE = 10;
+
     private int mId;
 
     private OnClickListener mListener;
@@ -30,12 +32,20 @@ public class AlphaButton extends Sprite {
 
     private boolean mDirectAlphaReaction;
 
+    private boolean mEnabled = true;
+
+    private float mPressedX;
+
+    private float mPressedY;
+
 
     public AlphaButton(int pId, float pX, float pY, boolean pDirectAlphaReaction, ITextureRegion pTextureRegion,
             VertexBufferObjectManager pVertexBufferObjectManager) {
         super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
 
         this.mId = pId;
+        
+        
         this.mDirectAlphaReaction = pDirectAlphaReaction;
     }
 
@@ -45,6 +55,9 @@ public class AlphaButton extends Sprite {
 
 
         if (pSceneTouchEvent.isActionDown()) {
+            mPressedX = pSceneTouchEvent.getX();
+            mPressedY = pSceneTouchEvent.getY();
+            
             if (mDirectAlphaReaction) {
                 setAlpha(ALPHA_HALF);
             }
@@ -72,7 +85,12 @@ public class AlphaButton extends Sprite {
                     }
                 }));
             }
-            if (mListener != null) {
+            
+            if (mListener != null && isEnabled() &&
+                    (Math.abs(mPressedX - pSceneTouchEvent.getX()) < PRESSED_SIZE && Math.abs(mPressedY - pSceneTouchEvent.getY()) < PRESSED_SIZE)) {
+                mPressedX = 0;
+                mPressedY = 0;
+                
                 this.mListener.onClick(this.mId);
                 return true;
             }
@@ -135,5 +153,15 @@ public class AlphaButton extends Sprite {
         if (mId != other.mId)
             return false;
         return true;
+    }
+
+
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
     }
 }
