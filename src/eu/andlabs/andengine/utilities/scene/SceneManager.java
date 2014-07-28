@@ -1,6 +1,7 @@
 package eu.andlabs.andengine.utilities.scene;
 
 import org.andengine.engine.Engine;
+import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.FadeInModifier;
@@ -55,12 +56,8 @@ public abstract class SceneManager {
 
             @Override
             public void run() {
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                
+                SceneManager.this.mEngine.getCamera().setHUD(null);
                 
                 // Dispose all the resources
                 if (SceneManager.this.mCurrentScene != null && pDisposeResources) {
