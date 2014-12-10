@@ -18,6 +18,10 @@ import eu.andlabs.andengine.utilities.widget.DirtyButton.OnClickListener;
  */
 public class AlphaButton extends Sprite {
 
+    private static int sGlobalIdCounter;
+
+    private int mGlobalId;
+
     private static final float ALPHA_HALF = 0.5f;
 
     private static final float ALPHA_FULL = 1f;
@@ -44,8 +48,12 @@ public class AlphaButton extends Sprite {
         super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
 
         this.mId = pId;
-        
-        
+
+        // Give the button a globally unique ID
+        this.mGlobalId = sGlobalIdCounter;
+        sGlobalIdCounter++;
+
+
         this.mDirectAlphaReaction = pDirectAlphaReaction;
     }
 
@@ -57,7 +65,7 @@ public class AlphaButton extends Sprite {
         if (pSceneTouchEvent.isActionDown()) {
             mPressedX = pSceneTouchEvent.getX();
             mPressedY = pSceneTouchEvent.getY();
-            
+
             if (mDirectAlphaReaction) {
                 setAlpha(ALPHA_HALF);
             }
@@ -85,12 +93,14 @@ public class AlphaButton extends Sprite {
                     }
                 }));
             }
-            
-            if (mListener != null && isEnabled() &&
-                    (Math.abs(mPressedX - pSceneTouchEvent.getX()) < PRESSED_SIZE && Math.abs(mPressedY - pSceneTouchEvent.getY()) < PRESSED_SIZE)) {
+
+            if (mListener != null
+                    && isEnabled()
+                    && (Math.abs(mPressedX - pSceneTouchEvent.getX()) < PRESSED_SIZE && Math.abs(mPressedY
+                            - pSceneTouchEvent.getY()) < PRESSED_SIZE)) {
                 mPressedX = 0;
                 mPressedY = 0;
-                
+
                 this.mListener.onClick(this.mId);
                 return true;
             }
@@ -136,7 +146,7 @@ public class AlphaButton extends Sprite {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + mId;
+        result = prime * result + mGlobalId;
         return result;
     }
 
@@ -150,7 +160,7 @@ public class AlphaButton extends Sprite {
         if (getClass() != obj.getClass())
             return false;
         AlphaButton other = (AlphaButton) obj;
-        if (mId != other.mId)
+        if (mGlobalId != other.mGlobalId)
             return false;
         return true;
     }

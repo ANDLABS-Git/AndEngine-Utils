@@ -325,4 +325,8 @@ public class ScrollableShapeView extends RectangularShape {
             }
         }
     }
+    
+    public ScrollableShapeAdapter getAdapter() {
+        return mAdapter;
+    }
 }
