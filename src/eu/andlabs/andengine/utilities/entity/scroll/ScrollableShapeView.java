@@ -77,6 +77,19 @@ public class ScrollableShapeView extends RectangularShape {
         // setScrollbarVisibility();
     }
 
+    
+    public void scrollToPosition(final int pPosition) {
+        final int size = mAdapter.size();
+        final float height = getHeight();
+        final float initialHeight = mInitialHeight;
+        
+        final float rowHeight = height / size;
+        
+        setX(-rowHeight * pPosition - initialHeight);
+        
+        
+        
+    }
 
     // private void setScrollbarVisibility() {
     // if (mScrollbar != null) {
