@@ -89,6 +89,11 @@ public class DirtyButton {
             this.mPressed.registerEntityModifier(pModifier);
         }
     }
+    
+    public void clearEntityModifiers() {
+        this.mInitial.clearEntityModifiers();
+        this.mPressed.clearEntityModifiers();
+    }
 
 
     public void setAlpha(final float pAlpha) {
