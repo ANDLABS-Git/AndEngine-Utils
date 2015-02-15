@@ -6,6 +6,8 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.shader.PositionColorTextureCoordinatesShaderProgram;
 import org.andengine.opengl.vbo.IVertexBufferObject;
 
+import android.util.Log;
+
 public class ScrollableShapeView extends RectangularShape {
 
     private static final float SCROLL_TOLLERANCE = 1;
@@ -22,7 +24,7 @@ public class ScrollableShapeView extends RectangularShape {
 
     private float mYFinal;
 
-    private boolean mDown = true;
+    private boolean mDown;
 
     private float mYDown;
 
@@ -36,8 +38,8 @@ public class ScrollableShapeView extends RectangularShape {
 
     private float mCreationX;
     private float mCreationY;
-    private float mCreationWidth;
-    private float mCreationHeight;
+    private final float mCreationWidth;
+    private final float mCreationHeight;
 
     private boolean mScrollingEnabled = true;
 
@@ -77,18 +79,25 @@ public class ScrollableShapeView extends RectangularShape {
         // setScrollbarVisibility();
     }
 
-    
     public void scrollToPosition(final int pPosition) {
+        scrollToPosition(pPosition, mInitialHeight);
+    }
+
+    
+    public void scrollToPosition(final int pPosition, final float pInitialHeight) {
         final int size = mAdapter.size();
         final float height = getHeight();
-        final float initialHeight = mInitialHeight;
+        final float initialHeight = pInitialHeight;
         
         final float rowHeight = height / size;
+
+        final float heightExcess = initialHeight % rowHeight;
+
         
-        setX(-rowHeight * pPosition - initialHeight);
+        final float newPosition = -rowHeight * pPosition + initialHeight + heightExcess;
         
-        
-        
+        mYFinal = newPosition;
+
     }
 
     // private void setScrollbarVisibility() {
