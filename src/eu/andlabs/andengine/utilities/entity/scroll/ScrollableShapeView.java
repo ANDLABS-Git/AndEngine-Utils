@@ -85,7 +85,7 @@ public class ScrollableShapeView extends RectangularShape {
 
     
     public void scrollToPosition(final int pPosition, final float pInitialHeight) {
-        final int size = mAdapter.size();
+        final int size = mAdapter == null ? 0 : mAdapter.size();
         final float height = getHeight();
         final float initialHeight = pInitialHeight;
         

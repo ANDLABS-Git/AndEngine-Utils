@@ -3,9 +3,12 @@ package eu.andlabs.andengine.utilities.scene;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
+import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.color.Color;
@@ -41,24 +44,57 @@ public abstract class SceneManager {
 
 
     public void changeScene(final ManagedScene pScene) {
-        changeScene(pScene, true);
+        changeScene(pScene, true, 0);
     }
 
 
     public void changeScene(final ManagedScene pScene, final boolean pDisposeResources) {
+        changeScene(pScene, pDisposeResources, 0);
+    }
+
+
+    public void changeScene(final ManagedScene pScene, final boolean pDisposeResources, final float pDelay) {
         // Show the loading screen,
         final ManagedLoadingScene loadingScene = pScene.getLoadingScene();
         loadingScene.onCreateResources();
         loadingScene.onCreateEntities();
         this.mEngine.setScene(loadingScene);
 
+        if (pDelay > 0) {
+            this.mEngine.registerUpdateHandler(new TimerHandler(pDelay, new ITimerCallback() {
+
+                @Override
+                public void onTimePassed(final TimerHandler pTimerHandler) {
+                    mEngine.runOnUpdateThread(new Runnable() {
+                        
+                        @Override
+                        public void run() {
+                            mEngine.unregisterUpdateHandler(pTimerHandler);
+                        }
+                    });
+                    
+                    changeScene(pScene, pDisposeResources, loadingScene);
+                }
+            }));
+        } else {
+            changeScene(pScene, pDisposeResources, loadingScene);
+        }
+    }
+
+
+    private void changeScene(final ManagedScene pScene, final boolean pDisposeResources, final ManagedLoadingScene loadingScene) {
         final Runnable runnable = new Runnable() {
 
             @Override
             public void run() {
-                
+                changeScene(pScene, pDisposeResources, loadingScene);
+            }
+
+
+            private void changeScene(final ManagedScene pScene, final boolean pDisposeResources,
+                    final ManagedLoadingScene loadingScene) {
                 SceneManager.this.mEngine.getCamera().setHUD(null);
-                
+
                 // Dispose all the resources
                 if (SceneManager.this.mCurrentScene != null && pDisposeResources) {
                     SceneManager.this.mCurrentScene.onDisposeResources();
@@ -79,7 +115,6 @@ public abstract class SceneManager {
 
                 // Load new resources
                 SceneManager.this.mCurrentScene.onCreateResources(loadingScene);
-
 
                 // Set the new scene with a nice alpha fade out/in
                 final HUD fadeHud = new HUD();
@@ -106,11 +141,12 @@ public abstract class SceneManager {
 
 
                             @Override
-                            public void onModifierFinished(IModifier<IEntity> pModifier, final IEntity pItem) {
+                            public void onModifierFinished(final IModifier<IEntity> pModifier, final IEntity pItem) {
                                 SceneManager.this.mEngine.runOnUpdateThread(new Runnable() {
 
                                     @Override
                                     public void run() {
+                                        pItem.unregisterEntityModifier((IEntityModifier) pModifier);
                                         pItem.detachSelf();
                                     }
                                 });
@@ -121,9 +157,7 @@ public abstract class SceneManager {
                 SceneManager.this.mEngine.getCamera().setHUD(fadeHud);
             }
         };
-
         new Thread(runnable, "Change Scene Thread").start();
-
     }
 
 
