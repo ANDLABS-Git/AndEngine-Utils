@@ -10,6 +10,7 @@ import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.color.Color;
 import org.andengine.util.modifier.IModifier;
@@ -66,13 +67,13 @@ public abstract class SceneManager {
                 @Override
                 public void onTimePassed(final TimerHandler pTimerHandler) {
                     mEngine.runOnUpdateThread(new Runnable() {
-                        
+
                         @Override
                         public void run() {
                             mEngine.unregisterUpdateHandler(pTimerHandler);
                         }
                     });
-                    
+
                     changeScene(pScene, pDisposeResources, loadingScene);
                 }
             }));
@@ -116,45 +117,65 @@ public abstract class SceneManager {
                 // Load new resources
                 SceneManager.this.mCurrentScene.onCreateResources(loadingScene);
 
-                // Set the new scene with a nice alpha fade out/in
-                final HUD fadeHud = new HUD();
-                fadeHud.setColor(Color.BLACK);
-
-                fadeHud.registerEntityModifier(new FadeInModifier(0.3f, new IEntityModifierListener() {
+                mEngine.registerUpdateHandler(new TimerHandler(.3f, new ITimerCallback() {
 
                     @Override
-                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
-                    }
+                    public void onTimePassed(final TimerHandler pTimerHandler) {
+                        mEngine.runOnUpdateThread(new Runnable() {
 
-
-                    @Override
-                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                            @Override
+                            public void run() {
+                                mEngine.unregisterUpdateHandler(pTimerHandler);
+                            }
+                        });
                         SceneManager.this.mCurrentScene.onCreateEntities();
-                        SceneManager.this.mCurrentScene.attachChild(fadeHud);
+                        // SceneManager.this.mCurrentScene.attachChild(fadeHud);
                         SceneManager.this.mEngine.setScene(mCurrentScene);
 
-                        fadeHud.registerEntityModifier(new FadeOutModifier(0.3f, new IEntityModifierListener() {
-
-                            @Override
-                            public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
-                            }
-
-
-                            @Override
-                            public void onModifierFinished(final IModifier<IEntity> pModifier, final IEntity pItem) {
-                                SceneManager.this.mEngine.runOnUpdateThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        pItem.unregisterEntityModifier((IEntityModifier) pModifier);
-                                        pItem.detachSelf();
-                                    }
-                                });
-                            }
-                        }));
                     }
                 }));
-                SceneManager.this.mEngine.getCamera().setHUD(fadeHud);
+
+
+//                // Set the new scene with a nice alpha fade out/in
+//                final HUD fadeHud = new HUD();
+//                final Rectangle rect = new Rectangle(0, 0, 1280, 720, mEngine.getVertexBufferObjectManager());
+//                rect.setColor(Color.BLACK);
+//                rect.setAlpha(0);
+//                fadeHud.attachChild(rect);
+//
+//                rect.registerEntityModifier(new FadeInModifier(0.15f, new IEntityModifierListener() {
+//
+//                    @Override
+//                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+//                    }
+//
+//
+//                    @Override
+//                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+//
+//
+//                        rect.registerEntityModifier(new FadeOutModifier(0.15f, new IEntityModifierListener() {
+//
+//                            @Override
+//                            public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+//                            }
+//
+//
+//                            @Override
+//                            public void onModifierFinished(final IModifier<IEntity> pModifier, final IEntity pItem) {
+//                                SceneManager.this.mEngine.runOnUpdateThread(new Runnable() {
+//
+//                                    @Override
+//                                    public void run() {
+//                                        pItem.unregisterEntityModifier((IEntityModifier) pModifier);
+//                                        pItem.detachSelf();
+//                                    }
+//                                });
+//                            }
+//                        }));
+//                    }
+//                }));
+//                SceneManager.this.mEngine.getCamera().setHUD(fadeHud);
             }
         };
         new Thread(runnable, "Change Scene Thread").start();
